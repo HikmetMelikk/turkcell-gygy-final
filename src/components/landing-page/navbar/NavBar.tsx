@@ -82,7 +82,7 @@ export default function NavBar() {
 						</NavDropdown>
 					</Nav>
 
-					<Nav className="ms-auto">
+					<Nav className="d-md-flex align-items-md-center ms-auto">
 						<NavDropdown title={t("links.assets.title")} id="navbar-dropdown">
 							<NavDropdown.Item href="#">
 								{t("links.assets.assetsAndMarkets")}
@@ -128,17 +128,16 @@ export default function NavBar() {
 						</NavDropdown>
 						<div className="d-lg-block mx-2 vr d-none"></div>
 						<Button
-              variant="link"
-							onClick={toggleTheme} 
-							className="me-2 p-0 nav-link" 
-                            aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'} 
-                        >
-                            {theme === "light" ? (
-                                <Sun size={18} /> 
-                            ) : (
-                                <Moon size={18} /> 
-                            )}
-                        </Button>
+							variant="link"
+							onClick={toggleTheme}
+							className="me-2 p-0 nav-link"
+							aria-label={
+								theme === "light"
+									? "Switch to dark mode"
+									: "Switch to light mode"
+							}>
+							{theme === "light" ? <Sun size={16} /> : <Moon size={16} />}
+						</Button>
 						<div className="d-lg-block mx-2 vr d-none"></div>
 						<Nav.Link href="#link">
 							<Image
