@@ -18,7 +18,7 @@ export default function BalanceContainer({
 	}, []);
 
 	return (
-		<Card className="p-4 border-0">
+		<Card className="p-4 border">
 			<div className="border-0 text-center">
 				<p className="mb-0 text-muted">{t("yourBalance")}</p>
 				<h1 className="fw-medium">$132,832.89</h1>

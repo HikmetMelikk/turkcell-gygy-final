@@ -35,7 +35,7 @@ export default function PriceChangeContainer({
 	t: (key: string) => string;
 }) {
 	return (
-		<Card className="border-0 h-100 card">
+		<Card className="border rounded-2 h-100 card">
 			<Card.Header className="p-2">
 				<Col className="d-flex align-items-center justify-content-between">
 					<Star />

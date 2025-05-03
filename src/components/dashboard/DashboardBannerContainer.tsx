@@ -9,13 +9,13 @@ import { Badge, Col, Container, Row } from "react-bootstrap";
 
 export default function DashboardBannerContainer() {
 	return (
-		<section className="bg-white border-0 rounded-3">
+		<section className="border rounded-3">
 			<Container
 				fluid
 				className="d-flex align-items-center justify-content-center py-4">
 				<Row className="align-items-center text-muted">
 					<Col xs={12} sm={12} md={2} className="mb-3 mb-md-0">
-						<h3 className="d-flex align-items-center text-black fw-semibold">
+						<h3 className="d-flex align-items-center fw-semibold">
 							BTC/USD <ChevronDown className="ms-2" size={20} />
 						</h3>
 					</Col>

@@ -63,7 +63,7 @@ export default function OrderHistoryContainer({
 }) {
 	const [activeTab, setActiveTab] = useState("tab1");
 	return (
-		<Card className="my-2 border-0 h-50">
+		<Card className="my-2 border rounded-2 h-50">
 			<Card.Header className="p-3">
 				<Nav className="nav-underline">
 					<Nav.Item>

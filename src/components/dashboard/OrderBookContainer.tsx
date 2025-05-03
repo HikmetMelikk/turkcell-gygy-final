@@ -63,7 +63,7 @@ export default function OrderBookContainer({
 	t: (key: string) => string;
 }) {
 	return (
-		<Card className="border-0 h-100">
+		<Card className="border rounded-2 h-100">
 			<Card.Header className="p-3 card-header">
 				<h5 className="mb-0">{t("orderBook.title")}</h5>
 			</Card.Header>

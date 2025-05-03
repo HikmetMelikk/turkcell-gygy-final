@@ -27,7 +27,7 @@ export default function DashboardNavBar() {
 	const [user, setUser] = useState<any>(null);
 	const [loading, setLoading] = useState(true);
 
-		const { theme, toggleTheme } = useThemeStore();
+	const { theme, toggleTheme } = useThemeStore();
 
 	useEffect(() => {
 		async function getUser() {
@@ -57,7 +57,7 @@ export default function DashboardNavBar() {
 				</Button>
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
 				<Navbar.Collapse id="basic-navbar-nav">
-					<Nav className="ms-auto">
+					<Nav className="d-md-flex align-items-md-center ms-auto">
 						<div className="position-relative me-3 nav-search-container">
 							<InputGroup>
 								<Form.Control
@@ -93,17 +93,16 @@ export default function DashboardNavBar() {
 						</NavDropdown>
 						<div className="d-lg-block mx-2 vr d-none"></div>
 						<Button
-              variant="link"
-							onClick={toggleTheme} 
-							className="me-2 p-0 nav-link" 
-                            aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'} 
-                        >
-                            {theme === "light" ? (
-                                <Sun size={18} /> 
-                            ) : (
-                                <Moon size={18} /> 
-                            )}
-                        </Button>
+							variant="link"
+							onClick={toggleTheme}
+							className="me-2 p-0 nav-link"
+							aria-label={
+								theme === "light"
+									? "Switch to dark mode"
+									: "Switch to light mode"
+							}>
+							{theme === "light" ? <Sun size={18} /> : <Moon size={18} />}
+						</Button>
 						<div className="d-lg-block mx-2 vr d-none"></div>
 						<Nav.Link href="#link">
 							<Image

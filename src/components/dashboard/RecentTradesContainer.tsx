@@ -54,7 +54,7 @@ export default function RecentTradesContainer({
 	t: (key: string) => string;
 }) {
 	return (
-		<Card className="border-0 h-100 card">
+		<Card className="border rounded-2 h-100 card">
 			<Card.Header className="p-3 card-header">
 				<h5 className="mb-0">{t("recentTrades.title")}</h5>
 			</Card.Header>
