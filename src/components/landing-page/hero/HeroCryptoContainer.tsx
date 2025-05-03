@@ -1,6 +1,3 @@
-"use client";
-
-import useMarketData from "@/hooks/useMarketData";
 import { heroCryptoContainerLinks } from "@/utils/heroCryptoContainersLinks";
 import Image from "next/image";
 import { Button, Card, CardBody, Col, Container, Row } from "react-bootstrap";
@@ -14,42 +11,13 @@ interface CoinDisplay {
 	priceChange: string;
 }
 
-export default function HeroCryptoContainer() {
-	const { info, market, loading } = useMarketData();
+interface HeroCryptoContainerProps {
+	filteredCoins: CoinDisplay[];
+}
 
-	const filteredCoins = market
-		.filter((coin) => ["1", "1027", "52", "1839"].includes(coin.id.toString()))
-		.map((coin) => {
-			const coinInfo = info[coin.id.toString()];
-			if (!coinInfo) return null;
-
-			return {
-				icon: coinInfo.logo,
-				title: coinInfo.name,
-				shortCut: `${coinInfo.symbol}/USD`,
-				price: `USD ${coin.quote.USD.price.toFixed(
-					coin.quote.USD.price >= 1 ? 2 : 6
-				)}`,
-				subPrice: `$${coin.quote.USD.market_cap.toLocaleString()}`,
-				priceChange: `${
-					coin.quote.USD.percent_change_24h >= 0 ? "+" : ""
-				}${coin.quote.USD.percent_change_24h.toFixed(2)}%`,
-			};
-		})
-		.filter(Boolean) as CoinDisplay[];
-
-	if (loading) {
-		return (
-			<Container className="z-2 bg-white shadow mb-5 rounded-4">
-				<Row className="align-items-center py-3">
-					<Col xs={12} className="text-center">
-						<p>Loading...</p>
-					</Col>
-				</Row>
-			</Container>
-		);
-	}
-
+export default function HeroCryptoContainer({
+	filteredCoins,
+}: HeroCryptoContainerProps) {
 	return (
 		<Container className="z-2 shadow mb-5 rounded-4">
 			<Row className="align-items-center py-3">
