@@ -63,8 +63,6 @@ export async function signup(data: RegisterFormData): ActionResult {
 		};
 	}
 
-	console.log("User created:", authData.user.id);
-
 	revalidatePath("/", "layout");
 	redirect("/");
 }

@@ -30,10 +30,8 @@ export async function changeUserPassword(
 			throw new Error(error.message || "Failed to update password.");
 		}
 
-		console.log("Password updated successfully.");
 		return { success: true, message: "Password updated successfully." };
 	} catch (error: any) {
-		console.error("Error in changeUserPassword action:", error);
 		return {
 			success: false,
 			message:

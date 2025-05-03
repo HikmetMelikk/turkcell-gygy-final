@@ -67,7 +67,6 @@ async function fetchCryptoData(): Promise<CoinDisplay[]> {
 			coinIdsToDisplay.includes(coin.id.toString())
 		);
 		if (relevantMarketData.length === 0) {
-			console.log("No relevant market data found after filtering.");
 			return [];
 		}
 

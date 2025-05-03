@@ -120,6 +120,12 @@
 		"title": "Güncel Kripto Para Fiyatları",
 		"subtitle": "Global kripto piyasasının toplam değeri <span>$1.86T</span>",
 		"tabs": ["Favoriler", "Türevler", "Spor"],
+		"loading": "Yükleniyor...",
+		"favorites": {
+			"title": "Favori Kriptolarınız",
+			"noFavoritesLoggedIn": "Henüz favori kripto paranız bulunmamaktadır. Listelerden yıldız ikonuna tıklayarak favorilerinize ekleyebilirsiniz.",
+			"noFavoritesLoggedOut": "Favori kripto paralarınızı görmek için lütfen <loginLink>giriş yapın</loginLink>."
+		},
 		"derivativesLinks": [
 			"Tümü",
 			"Ters Sürekli",

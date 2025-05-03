@@ -2,6 +2,9 @@
 
 import { useFavoriteStore } from "@/store/favoritesStore";
 
+import { Info, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { getFavoriteCoinsData } from "./action";
 
@@ -14,6 +17,7 @@ interface CoinInfo {
 }
 
 export default function FavoriteCoins() {
+	const t = useTranslations("Market");
 	const [coins, setCoins] = useState<CoinInfo[]>([]);
 	const [isPending, startTransition] = useTransition();
 	const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
@@ -29,16 +33,39 @@ export default function FavoriteCoins() {
 		});
 	}, [setFavorites]);
 
-	if (isPending) return <p>Yükleniyor...</p>;
+	if (isPending || isLoggedIn === null) {
+		return (
+			<div className="d-flex align-items-center justify-content-center py-5 text-muted">
+				<Loader2 className="me-2 animate-spin" size={24} />
+				<span>{t("loading")}</span>
+			</div>
+		);
+	}
 
-	if (isLoggedIn === false || (isLoggedIn === true && !coins.length))
-		return <p>Favori coin bulunamadı veya görüntülemek için giriş yapın.</p>;
-
-	if (isLoggedIn === null) return <p>Yükleniyor...</p>;
+	if (!isLoggedIn || (isLoggedIn && coins.length === 0)) {
+		return (
+			<div
+				className="d-flex align-items-center mt-4 alert alert-info"
+				role="alert">
+				<Info size={24} className="flex-shrink-0 me-3" />
+				<div>
+					{isLoggedIn
+						? t("favorites.noFavoritesLoggedIn")
+						: t.rich("favorites.noFavoritesLoggedOut", {
+								loginLink: (chunks) => (
+									<Link href="/login" className="alert-link">
+										{chunks}
+									</Link>
+								),
+						  })}
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="py-5 container">
-			<h2 className="mb-4">Favori Kriptolarınız</h2>
+			<h2 className="mb-4">{t("favorites.title")}</h2>
 			<div className="row">
 				{coins.map((coin) => (
 					<div key={coin.id} className="mb-4 col-6 col-md-4 col-lg-3">

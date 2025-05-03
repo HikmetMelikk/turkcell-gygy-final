@@ -118,6 +118,12 @@
 		"title": "Today’s Cryptocurrency prices",
 		"subtitle": "The global crypto market cap is <span>$1.86T</span>",
 		"tabs": ["Favorites", "Derivatives", "Sports"],
+		"loading": "Loading...",
+		"favorites": {
+			"title": "Your Favorite Cryptos",
+			"noFavoritesLoggedIn": "You don't have any favorite cryptocurrencies yet. You can add them by clicking the star icon in the lists.",
+			"noFavoritesLoggedOut": "Please <loginLink>log in</loginLink> to see your favorite cryptocurrencies."
+		},
 		"derivativesLinks": [
 			"All",
 			"Inverse Perpetual",
@@ -139,6 +145,7 @@
 	"MarketUpdate": {
 		"title": "Market Update",
 		"seeAll": "See All Coins",
+
 		"table": {
 			"col1": "Name",
 			"col2": "Last Price",

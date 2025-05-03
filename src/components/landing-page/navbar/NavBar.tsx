@@ -64,7 +64,7 @@ export default function NavBar() {
 							<NavDropdown.Item href="/">Homepage</NavDropdown.Item>
 						</NavDropdown>
 
-						<Nav.Link href="/market">{t("links.buyCrypto")}</Nav.Link>
+						<Nav.Link href="#">{t("links.buyCrypto")}</Nav.Link>
 						<Nav.Link href="/market">{t("links.markets")}</Nav.Link>
 						<Nav.Link href="/">{t("links.exchange")}</Nav.Link>
 						<Nav.Link href="/">{t("links.spot")}</Nav.Link>

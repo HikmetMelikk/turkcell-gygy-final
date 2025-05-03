@@ -13,21 +13,26 @@ import DerivativesNavs from "./derivatives/DerivativesNavs";
 import MarketTable from "./derivatives/MarketTable";
 import FavoritesPage from "./favorite-coins/FavoriteCoins";
 
+const tabKeys = ["favorites", "derivatives", "sports"];
+
 export default function FavoritesTableContainer() {
 	const t = useTranslations("Market");
-	const [activeKey, setActiveKey] = useState<string>(t.raw("tabs")[0]);
+
+	const tabLabels: string[] = t.raw("tabs");
+
+	const [activeKey, setActiveKey] = useState<string>(tabKeys[0]);
 
 	return (
 		<Container className="mb-5 rounded-4">
 			<Card className="shadow-sm">
 				<Tab.Container
 					activeKey={activeKey}
-					onSelect={(k) => setActiveKey(k || t.raw("tabs")[0])}>
+					onSelect={(k) => setActiveKey(k || tabKeys[0])}>
 					<CardHeader className="bg-body-secondary">
 						<Nav variant="tabs" className="border-bottom-0">
-							{t.raw("tabs").map((item: string, id: number) => (
-								<Nav.Item key={id}>
-									<Nav.Link eventKey={item.toLowerCase()}>{item}</Nav.Link>
+							{tabLabels.map((item: string, id: number) => (
+								<Nav.Item key={tabKeys[id]}>
+									<Nav.Link eventKey={tabKeys[id]}>{item}</Nav.Link>
 								</Nav.Item>
 							))}
 						</Nav>

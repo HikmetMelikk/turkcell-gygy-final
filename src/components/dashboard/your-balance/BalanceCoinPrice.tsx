@@ -10,10 +10,10 @@ export default function BalanceCoinPrice({ coin }: { coin: string }) {
 					`https://api.binance.com/api/v3/ticker/price?symbol=${coin}USDT`
 				);
 				const data = await res.json();
-				console.log(data);
+
 				setPrice(Number(data.price));
 			} catch (error) {
-				console.error("Error fetching price:", error);
+				setPrice(0);
 			}
 		};
 

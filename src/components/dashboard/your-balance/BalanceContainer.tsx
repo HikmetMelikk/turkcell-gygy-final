@@ -17,7 +17,6 @@ export default function BalanceContainer({
 			.then((data) => setCoins(data.data));
 	}, []);
 
-	console.log(coins);
 	return (
 		<Card className="p-4 border-0">
 			<div className="border-0 text-center">
