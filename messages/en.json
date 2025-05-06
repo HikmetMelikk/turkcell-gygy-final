@@ -89,6 +89,7 @@
 		"bannerTitle": "Login",
 		"path": "Home / Login",
 		"title": "Login To Rockie",
+
 		"subtitle": "Welcome back! Log In now to start trading",
 		"tabs": ["Email", "Mobile"],
 		"email": {
@@ -102,6 +103,7 @@
 		"rememberMe": "Remember Me",
 		"forgotPassword": "Forgot Password?",
 		"loginButton": "Login",
+		"loggingIn": "Logging In...",
 		"notAMember": "Not a member?",
 		"register": "Register",
 		"loginWithQR": "Login with QR Code",

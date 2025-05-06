@@ -8,20 +8,34 @@ interface TradingViewMiniChartProps {
 	height?: number;
 }
 
+// TypeScript için global tanımlama
+declare global {
+	interface Window {
+		TradingView?: any;
+	}
+}
+
 export default function TradingViewMiniChart({
 	symbol = "BITSTAMP:BTCUSD",
 	width = 100,
 	height = 40,
 }: TradingViewMiniChartProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
-		const { theme, toggleTheme } = useThemeStore();
+	const { theme } = useThemeStore(); // toggleTheme'i kaldırdık çünkü kullanılmıyor
 
 	useEffect(() => {
 		const container = containerRef.current;
 		if (!container) return;
 
+		// Her seferinde widget'ı tamamen temizle
 		container.innerHTML = "";
 
+		// Widget için doğru DOM yapısı kur
+		const widgetDiv = document.createElement("div");
+		widgetDiv.className = "tradingview-widget-container__widget";
+		container.appendChild(widgetDiv);
+
+		// TradingView widget'ini oluştur ve tema parametresini doğru ayarla
 		const script = document.createElement("script");
 		script.src =
 			"https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
@@ -34,15 +48,12 @@ export default function TradingViewMiniChart({
 			locale: "en",
 			dateRange: "12M",
 			colorTheme: theme === "dark" ? "dark" : "light",
-			isTransparent: true,
+			isTransparent: false,
 			autosize: false,
 			chartOnly: true,
 			noTimeScale: true,
 		});
 
-		const widgetContainer = document.createElement("div");
-		widgetContainer.className = "tradingview-widget-container__widget";
-		container.appendChild(widgetContainer);
 		container.appendChild(script);
 
 		return () => {
@@ -51,10 +62,8 @@ export default function TradingViewMiniChart({
 	}, [symbol, width, height, theme]);
 
 	return (
-		<div
-			ref={containerRef}
-			className="tradingview-widget-container"
-			style={{ width, height }}
-		/>
+		<div className="tradingview-widget-container" style={{ width, height }}>
+			<div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+		</div>
 	);
 }

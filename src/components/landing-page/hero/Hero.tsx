@@ -40,10 +40,10 @@ interface CoinDisplay {
 }
 
 const imagesData = [
-	{ src: "p1.svg", alt: "Partner 1", width: 100, height: 50 },
-	{ src: "p2.svg", alt: "Partner 2", width: 100, height: 50 },
-	{ src: "p3.svg", alt: "Partner 3", width: 100, height: 50 },
-	{ src: "p4.svg", alt: "Partner 4", width: 100, height: 50 },
+	{ src: "p1.svg", alt: "Partner 1" },
+	{ src: "p2.svg", alt: "Partner 2" },
+	{ src: "p3.svg", alt: "Partner 3" },
+	{ src: "p4.svg", alt: "Partner 4" },
 ];
 
 async function fetchCryptoData(): Promise<CoinDisplay[]> {
@@ -159,9 +159,8 @@ export default async function Hero() {
 										<Image
 											src={`/${image.src}`}
 											alt={image.alt}
-											width={image.width}
-											height={image.height}
-											className="img-fluid"
+											width={100}
+											height={50}
 										/>
 									</Col>
 								))}
@@ -173,7 +172,7 @@ export default async function Hero() {
 								alt="Hero Image"
 								width={450}
 								height={450}
-								className="img-fluid"
+								priority
 							/>
 						</Col>
 					</Row>

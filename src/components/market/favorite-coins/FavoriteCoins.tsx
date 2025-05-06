@@ -1,7 +1,7 @@
 "use client";
 
 import { useFavoriteStore } from "@/store/favoritesStore";
-
+import { createClient } from "@/utils/supabase/client";
 import { Info, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -25,8 +25,14 @@ export default function FavoriteCoins() {
 
 	useEffect(() => {
 		startTransition(async () => {
+			// Önce gerçek oturum durumunu kontrol et
+			const supabase = createClient();
+			const { data: sessionData } = await supabase.auth.getSession();
+			const isLoggedInStatus = !!sessionData.session;
+			setIsLoggedIn(isLoggedInStatus);
+
+			// Favori verileri getir
 			const { coins: fetchedCoins, favoriteIds } = await getFavoriteCoinsData();
-			setIsLoggedIn(favoriteIds.length > 0 || fetchedCoins.length > 0);
 
 			setCoins(fetchedCoins);
 			setFavorites(favoriteIds);
@@ -42,27 +48,39 @@ export default function FavoriteCoins() {
 		);
 	}
 
-	if (!isLoggedIn || (isLoggedIn && coins.length === 0)) {
+	// Burada doğru mantıksal kontrolü yap
+	if (!isLoggedIn) {
 		return (
 			<div
 				className="d-flex align-items-center mt-4 alert alert-info"
 				role="alert">
 				<Info size={24} className="flex-shrink-0 me-3" />
 				<div>
-					{isLoggedIn
-						? t("favorites.noFavoritesLoggedIn")
-						: t.rich("favorites.noFavoritesLoggedOut", {
-								loginLink: (chunks) => (
-									<Link href="/login" className="alert-link">
-										{chunks}
-									</Link>
-								),
-						  })}
+					{t.rich("favorites.noFavoritesLoggedOut", {
+						loginLink: (chunks) => (
+							<Link href="/login" className="alert-link">
+								{chunks}
+							</Link>
+						),
+					})}
 				</div>
 			</div>
 		);
 	}
 
+	// Kullanıcı giriş yaptı ama favorileri yok
+	if (coins.length === 0) {
+		return (
+			<div
+				className="d-flex align-items-center mt-4 alert alert-info"
+				role="alert">
+				<Info size={24} className="flex-shrink-0 me-3" />
+				<div>{t("favorites.noFavoritesLoggedIn")}</div>
+			</div>
+		);
+	}
+
+	// Kullanıcı giriş yaptı ve favorileri var
 	return (
 		<div className="py-5 container">
 			<h2 className="mb-4">{t("favorites.title")}</h2>

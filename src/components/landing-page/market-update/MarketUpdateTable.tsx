@@ -3,12 +3,16 @@
 import { toggleFavoriteCoin } from "@/hooks/toggleFavorites";
 import useMarketData from "@/hooks/useMarketData";
 import { useFavoriteStore } from "@/store/favoritesStore";
+import { useThemeStore } from "@/store/themeStore";
+import { createClient } from "@/utils/supabase/client";
 import { StarIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import Toast from "react-bootstrap/Toast";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./market.module.scss";
 import TradingViewMiniChart from "./TradingViewMiniChart";
 
@@ -17,19 +21,58 @@ export default function MarketUpdateTable({
 }: {
 	t: (key: string) => string;
 }) {
-	const { info, market, loading } = useMarketData();
+	const { info, market } = useMarketData();
 	const [showToast, setShowToast] = useState(false);
 	const [toastMessage, setToastMessage] = useState("");
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const router = useRouter();
 
 	const isFavorite = useFavoriteStore((state) => state.isFavorite);
+	const { theme } = useThemeStore();
 
-	if (loading) {
-		return <div>Loading...</div>;
-	}
+	// Kullanıcının oturum durumunu kontrol et
+	useEffect(() => {
+		const checkAuthStatus = async () => {
+			const supabase = createClient();
+			const { data } = await supabase.auth.getSession();
+			setIsAuthenticated(!!data.session);
+		};
+
+		checkAuthStatus();
+	}, []);
+
+	const handleFavoriteClick = async (coinId: string, coinName: string) => {
+		if (!isAuthenticated) {
+			// Kullanıcı giriş yapmamış
+			setToastMessage("Favori ekleyebilmeniz için lütfen giriş yapınız");
+			setShowToast(true);
+			return;
+		}
+
+		// Kullanıcı giriş yapmış, normal favori işlemine devam et
+		await toggleFavoriteCoin(coinId);
+		const updatedFav = useFavoriteStore.getState().isFavorite(coinId);
+
+		setToastMessage(
+			updatedFav
+				? `${coinName} favorilere eklendi.`
+				: `${coinName} favorilerden çıkarıldı.`
+		);
+		setShowToast(true);
+	};
+
+	// Toast temasını belirleme
+	const getToastTheme = () => {
+		// Eğer giriş yapmadan favori ekleme uyarısı ise warning rengi
+		if (!isAuthenticated && toastMessage.includes("giriş yapınız")) {
+			return theme === "dark" ? "warning" : "warning";
+		}
+		// Başarılı favori ekleme/çıkarma işlemleri için success rengi
+		return theme === "dark" ? "success" : "success";
+	};
 
 	return (
-		<>
+		<Suspense fallback={<Skeleton count={5} height={50} />}>
 			<Table borderless hover responsive className="text-center">
 				<thead>
 					<tr>
@@ -59,17 +102,6 @@ export default function MarketUpdateTable({
 
 						const fav = isFavorite(coinId);
 
-						const handleFavoriteClick = async () => {
-							await toggleFavoriteCoin(coinId);
-							const updatedFav = useFavoriteStore.getState().isFavorite(coinId);
-
-							setToastMessage(
-								updatedFav
-									? `${coinInfo.name} favorilere eklendi.`
-									: `${coinInfo.name} favorilerden çıkarıldı.`
-							);
-							setShowToast(true);
-						};
 						const handleTradeClick = () => {
 							router.push(`/dashboard?symbol=${encodeURIComponent(tvSymbol)}`);
 						};
@@ -82,7 +114,7 @@ export default function MarketUpdateTable({
 										fill={fav ? "#ffc107" : "none"}
 										className="text-warning"
 										style={{ cursor: "pointer" }}
-										onClick={handleFavoriteClick}
+										onClick={() => handleFavoriteClick(coinId, coinInfo.name)}
 									/>
 								</td>
 								<td className="align-middle">{index + 1}</td>
@@ -134,13 +166,22 @@ export default function MarketUpdateTable({
 				onClose={() => setShowToast(false)}
 				delay={2500}
 				autohide
-				className="bottom-0 position-fixed bg-light m-4 end-0">
-				<Toast.Header>
-					<strong className="me-auto">Favoriler</strong>
-					<small>Şimdi</small>
+				bg={getToastTheme()}
+				className="bottom-0 position-fixed m-4 end-0">
+				<Toast.Header
+					closeButton={true}
+					className={theme === "dark" ? "bg-dark text-light" : ""}>
+					<strong className="me-auto">
+						{!isAuthenticated && toastMessage.includes("giriş yapınız")
+							? "Bilgi"
+							: "Favoriler"}
+					</strong>
+					<small>{theme === "dark" ? "şimdi" : "Şimdi"}</small>
 				</Toast.Header>
-				<Toast.Body>{toastMessage}</Toast.Body>
+				<Toast.Body className={theme === "dark" ? "text-light" : ""}>
+					{toastMessage}
+				</Toast.Body>
 			</Toast>
-		</>
+		</Suspense>
 	);
 }

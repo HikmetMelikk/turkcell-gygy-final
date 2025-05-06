@@ -13,7 +13,7 @@ export default function WhatIsRockie() {
 						alt="What is Rockie Image"
 						width={500}
 						height={500}
-						className="img-fluid"
+						loading="lazy"
 					/>
 				</Col>
 				<Col className="justify-content-center my-3">
@@ -33,7 +33,7 @@ export default function WhatIsRockie() {
 											alt={t(`articles.${index}.title`)}
 											width={20}
 											height={20}
-											className="mb-2 img-fluid"
+											className="mb-2"
 											loading="lazy"
 										/>
 										<h5>{t(`articles.${index}.title`)}</h5>

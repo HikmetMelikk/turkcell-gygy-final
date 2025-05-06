@@ -14,6 +14,7 @@ import {
 	Form,
 	Nav,
 	Row,
+	Spinner,
 	Tab,
 } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -22,6 +23,7 @@ import styles from "./login.module.scss";
 
 export default function Login() {
 	const t = useTranslations("Login");
+	const [isPending, setIsPending] = useState(false);
 
 	const defaultTab = t.raw("tabs")[0].toLowerCase();
 	const [activeLoginTab, setActiveLoginTab] = useState<string>(defaultTab);
@@ -30,12 +32,26 @@ export default function Login() {
 		register,
 		handleSubmit,
 		formState: { errors },
+		setError,
 	} = useForm<LoginFormData>({
 		resolver: yupResolver(loginSchema),
 	});
 
-	const onSubmit = (data: LoginFormData) => {
-		login(data);
+	const onSubmit = async (data: LoginFormData) => {
+		setIsPending(true);
+		try {
+			const result = await login(data);
+			if (result?.error) {
+				setError("email", {
+					type: "manual",
+					message: result.error,
+				});
+			}
+		} catch (error) {
+			console.error("Login error:", error);
+		} finally {
+			setIsPending(false);
+		}
 	};
 
 	return (
@@ -157,8 +173,23 @@ export default function Login() {
 														variant="primary"
 														type="submit"
 														size="lg"
+														disabled={isPending}
 														className="rounded-pill">
-														{t("loginButton")}
+														{isPending ? (
+															<>
+																<Spinner
+																	as="span"
+																	animation="border"
+																	size="sm"
+																	role="status"
+																	aria-hidden="true"
+																	className="me-2"
+																/>
+																{t("loggingIn")}
+															</>
+														) : (
+															t("loginButton")
+														)}
 													</Button>
 												</div>
 
