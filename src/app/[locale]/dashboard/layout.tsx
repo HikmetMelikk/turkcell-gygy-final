@@ -6,7 +6,6 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import { useSidebarStore } from "@/store/sidebar-store";
 import React, { useEffect } from "react";
-import { SSRProvider } from "react-bootstrap";
 import "./dashboard.scss";
 
 export default function DashboardLayout({
@@ -29,21 +28,19 @@ export default function DashboardLayout({
 	}, [isOpen, isMobile]);
 
 	return (
-		<SSRProvider>
-			<main className="dashboard-container">
-				<Sidebar />
+		<main className="dashboard-container">
+			<Sidebar />
 
-				{isMobile && (
-					<div
-						className={`sidebar-backdrop ${isOpen ? "show" : ""}`}
-						onClick={close}
-					/>
-				)}
-				<section className="main-content">
-					<DashboardNavBar />
-					<div className="content-wrapper">{children}</div>
-				</section>
-			</main>
-		</SSRProvider>
+			{isMobile && (
+				<div
+					className={`sidebar-backdrop ${isOpen ? "show" : ""}`}
+					onClick={close}
+				/>
+			)}
+			<section className="main-content">
+				<DashboardNavBar />
+				<div className="content-wrapper">{children}</div>
+			</section>
+		</main>
 	);
 }
