@@ -1,0 +1,52 @@
+@keyframes shimmer {
+	0% {
+		background-position: -200% 0;
+	}
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+.skeleton {
+	display: block;
+	border-radius: 8px;
+	margin-bottom: 0.5rem;
+	background: linear-gradient(
+		90deg,
+		rgba(var(--bs-secondary-rgb), 0.1) 25%,
+		rgba(var(--bs-secondary-rgb), 0.2) 37%,
+		rgba(var(--bs-secondary-rgb), 0.1) 63%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite linear;
+	opacity: 0.7;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+:global(.dark-theme) {
+	.skeleton {
+		background: linear-gradient(
+			90deg,
+			rgba(255, 255, 255, 0.05) 25%,
+			rgba(255, 255, 255, 0.15) 37%,
+			rgba(255, 255, 255, 0.05) 63%
+		);
+		background-size: 200% 100%;
+		opacity: 0.8;
+	}
+}
+
+@media (prefers-reduced-motion) {
+	.skeleton {
+		animation: none;
+		background-position: 0 0;
+		background: rgba(var(--bs-secondary-rgb), 0.15);
+	}
+
+	:global(.dark-theme) .skeleton {
+		background: rgba(255, 255, 255, 0.1);
+	}
+}
