@@ -27,19 +27,56 @@ export default function MarketUpdateTable({
 	const [loadingButton, setLoadingButton] = useState<string | null>(null);
 	const router = useRouter();
 
-	const isFavorite = useFavoriteStore((state) => state.isFavorite);
+	const favoriteStore = useFavoriteStore();
+	const isFavorite = (coinId: string) =>
+		isAuthenticated && favoriteStore.isFavorite(coinId);
 	const { theme } = useThemeStore();
 
-	// Kullanıcının oturum durumunu kontrol et
 	useEffect(() => {
 		const checkAuthStatus = async () => {
 			const supabase = createClient();
 			const { data } = await supabase.auth.getSession();
 			setIsAuthenticated(!!data.session);
+
+			if (!data.session) {
+				favoriteStore.setFavorites([]);
+			} else {
+				loadUserFavorites(data.session.user.id);
+			}
 		};
 
 		checkAuthStatus();
+
+		const supabase = createClient();
+		const { data: authListener } = supabase.auth.onAuthStateChange(
+			(event: string, session: any) => {
+				setIsAuthenticated(!!session);
+
+				if (event === "SIGNED_OUT") {
+					favoriteStore.setFavorites([]);
+				} else if (event === "SIGNED_IN" && session) {
+					loadUserFavorites(session.user.id);
+				}
+			}
+		);
+
+		return () => {
+			authListener?.subscription.unsubscribe();
+		};
 	}, []);
+
+	const loadUserFavorites = async (userId: string) => {
+		const supabase = createClient();
+		const { data } = await supabase
+			.from("favorites")
+			.select("coin_id")
+			.eq("user_id", userId);
+
+		if (data && data.length > 0) {
+			const favoriteIds = data.map((item) => item.coin_id);
+			favoriteStore.setFavorites(favoriteIds);
+		}
+	};
 
 	// Verinin yüklenip yüklenmediğini kontrol et
 	useEffect(() => {
@@ -54,15 +91,13 @@ export default function MarketUpdateTable({
 
 	const handleFavoriteClick = async (coinId: string, coinName: string) => {
 		if (!isAuthenticated) {
-			// Kullanıcı giriş yapmamış
 			setToastMessage("Favori ekleyebilmeniz için lütfen giriş yapınız");
 			setShowToast(true);
 			return;
 		}
 
-		// Kullanıcı giriş yapmış, normal favori işlemine devam et
 		await toggleFavoriteCoin(coinId);
-		const updatedFav = useFavoriteStore.getState().isFavorite(coinId);
+		const updatedFav = isFavorite(coinId);
 
 		setToastMessage(
 			updatedFav
@@ -72,17 +107,13 @@ export default function MarketUpdateTable({
 		setShowToast(true);
 	};
 
-	// Toast temasını belirleme
 	const getToastTheme = () => {
-		// Eğer giriş yapmadan favori ekleme uyarısı ise warning rengi
 		if (!isAuthenticated && toastMessage.includes("giriş yapınız")) {
 			return "warning";
 		}
-		// Başarılı favori ekleme/çıkarma işlemleri için success rengi
 		return "success";
 	};
 
-	// Skeleton loader
 	const renderSkeletonRows = () => {
 		return (
 			<>
@@ -101,10 +132,9 @@ export default function MarketUpdateTable({
 
 	const handleTradeClick = (tvSymbol: string) => {
 		setLoadingButton(tvSymbol);
-		// Gerçek navigasyon öncesi küçük bir gecikme ekleyerek spinner'ın görünmesini sağla
 		setTimeout(() => {
 			router.push(`/dashboard?symbol=${encodeURIComponent(tvSymbol)}`);
-		}, 800); // 800ms gecikme - UX için yeterli bir süre
+		}, 800);
 	};
 
 	return (
