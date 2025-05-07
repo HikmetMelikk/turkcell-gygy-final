@@ -1,6 +1,7 @@
 "use client";
 
 import { profileUpdateSchema } from "@/lib/definitions";
+import { createClient } from "@/utils/supabase/client";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
 import { Button, Col, Form, Row, Tab, Toast } from "react-bootstrap";
@@ -38,6 +39,52 @@ export default function ProfilePane({
 		},
 	});
 
+	const onSubmit = async (data: { nickname: string; phone: string }) => {
+		try {
+			setUpdating(true);
+			const supabase = createClient();
+
+			console.log("User ID:", user.id);
+
+			// Kullanıcı metadata'sını güncelle
+			const { error } = await supabase.auth.updateUser({
+				data: {
+					nickname: data.nickname,
+					phone: data.phone,
+				},
+			});
+
+			if (error) {
+				throw error;
+			}
+
+			// Profiles tablosunu da güncelle (RLS kurallarına uygun olarak)
+			const { error: profileError } = await supabase
+				.from("profiles")
+				.update({
+					nickname: data.nickname,
+					phone: data.phone,
+					updated_at: new Date().toISOString(),
+				})
+				.eq("id", user.id);
+
+			if (profileError) {
+				throw profileError;
+			}
+
+			setToastVariant("success");
+			setToastMessage("Profile updated successfully");
+			setShowToast(true);
+		} catch (error: any) {
+			console.error("Update error:", error);
+			setToastVariant("danger");
+			setToastMessage(error.message || "Failed to update profile");
+			setShowToast(true);
+		} finally {
+			setUpdating(false);
+		}
+	};
+
 	return (
 		<Tab.Pane active={activeProfileTab === profileTabs[0].title.toLowerCase()}>
 			<h1>{t("bannerTitle")}</h1>
@@ -59,7 +106,7 @@ export default function ProfilePane({
 				<Toast.Body className="text-white">{toastMessage}</Toast.Body>
 			</Toast>
 
-			<Form>
+			<Form onSubmit={handleSubmit(onSubmit)}>
 				<Row className="d-flex">
 					<Col md={6}>
 						<Form.Group>
@@ -82,7 +129,7 @@ export default function ProfilePane({
 							<Form.Control
 								type="text"
 								className="bg-white my-4"
-								placeholder="FIRAT"
+								placeholder=""
 								disabled
 							/>
 						</Form.Group>
