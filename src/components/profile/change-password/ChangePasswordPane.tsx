@@ -5,6 +5,7 @@ import {
 	type ChangePasswordFormData,
 } from "@/lib/definitions";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import {
 	Button,
@@ -26,7 +27,6 @@ export default function ChangePasswordPane({
 	activeProfileTab: string;
 	profileTabs: { title: string; icon: string }[];
 }) {
-	const [loading, setLoading] = useState(false);
 	const [showToast, setShowToast] = useState(false);
 	const [toastMessage, setToastMessage] = useState("");
 	const [toastVariant, setToastVariant] = useState<"success" | "danger">(
@@ -42,32 +42,35 @@ export default function ChangePasswordPane({
 		resolver: yupResolver(changePasswordSchema),
 	});
 
-	const onSubmit = async (data: ChangePasswordFormData) => {
-		setLoading(true);
-		setShowToast(false);
-
-		try {
-			const result = await changeUserPassword({
+	// TanStack Query ile şifre değiştirme mutasyonu
+	const changePasswordMutation = useMutation({
+		mutationFn: async (data: ChangePasswordFormData) => {
+			return await changeUserPassword({
 				newPassword: data.newPassword,
 			});
-
+		},
+		onSuccess: (result) => {
 			if (result.success) {
 				setToastVariant("success");
 				setToastMessage(result.message);
-				reset();
+				reset(); // Başarılı olduğunda formu sıfırla
 			} else {
 				setToastVariant("danger");
 				setToastMessage(result.message);
 			}
 			setShowToast(true);
-		} catch (error: any) {
+		},
+		onError: (error: Error) => {
 			console.error("Error submitting password change:", error);
 			setToastVariant("danger");
 			setToastMessage(error.message || "An unexpected error occurred.");
 			setShowToast(true);
-		} finally {
-			setLoading(false);
-		}
+		},
+	});
+
+	const onSubmit = (data: ChangePasswordFormData) => {
+		setShowToast(false);
+		changePasswordMutation.mutate(data);
 	};
 
 	return (
@@ -163,8 +166,8 @@ export default function ChangePasswordPane({
 							variant="primary"
 							type="submit"
 							className="px-4 rounded-pill"
-							disabled={loading}>
-							{loading ? (
+							disabled={changePasswordMutation.isPending}>
+							{changePasswordMutation.isPending ? (
 								<>
 									<Spinner
 										as="span"

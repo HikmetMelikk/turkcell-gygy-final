@@ -1,11 +1,12 @@
 "use client";
 
 import { profileUpdateSchema } from "@/lib/definitions";
-import { createClient } from "@/utils/supabase/client";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button, Col, Form, Row, Tab, Toast } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { updateProfile } from "./action";
 
 export default function ProfilePane({
 	user,
@@ -20,12 +21,13 @@ export default function ProfilePane({
 	t: any;
 	setActiveProfileTab: React.Dispatch<React.SetStateAction<string>>;
 }) {
-	const [updating, setUpdating] = useState(false);
 	const [showToast, setShowToast] = useState(false);
 	const [toastMessage, setToastMessage] = useState("");
 	const [toastVariant, setToastVariant] = useState<"success" | "danger">(
 		"success"
 	);
+
+	const queryClient = useQueryClient();
 
 	const {
 		register,
@@ -39,50 +41,31 @@ export default function ProfilePane({
 		},
 	});
 
-	const onSubmit = async (data: { nickname: string; phone: string }) => {
-		try {
-			setUpdating(true);
-			const supabase = createClient();
-
-			console.log("User ID:", user.id);
-
-			// Kullanıcı metadata'sını güncelle
-			const { error } = await supabase.auth.updateUser({
-				data: {
-					nickname: data.nickname,
-					phone: data.phone,
-				},
-			});
-
-			if (error) {
-				throw error;
+	const updateProfileMutation = useMutation({
+		mutationFn: async (data: { nickname: string; phone: string }) => {
+			const result = await updateProfile(user.id, data);
+			if (!result.success) {
+				throw new Error(result.error);
 			}
-
-			// Profiles tablosunu da güncelle (RLS kurallarına uygun olarak)
-			const { error: profileError } = await supabase
-				.from("profiles")
-				.update({
-					nickname: data.nickname,
-					phone: data.phone,
-					updated_at: new Date().toISOString(),
-				})
-				.eq("id", user.id);
-
-			if (profileError) {
-				throw profileError;
-			}
+			return result;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
 
 			setToastVariant("success");
 			setToastMessage("Profile updated successfully");
 			setShowToast(true);
-		} catch (error: any) {
+		},
+		onError: (error: Error) => {
 			console.error("Update error:", error);
 			setToastVariant("danger");
 			setToastMessage(error.message || "Failed to update profile");
 			setShowToast(true);
-		} finally {
-			setUpdating(false);
-		}
+		},
+	});
+
+	const onSubmit = async (data: { nickname: string; phone: string }) => {
+		updateProfileMutation.mutate(data);
 	};
 
 	return (
@@ -230,8 +213,10 @@ export default function ProfilePane({
 						<Button
 							type="submit"
 							className="px-5 py-2 rounded-pill"
-							disabled={updating}>
-							{updating ? "Updating..." : t("features.level1.updateProfile")}
+							disabled={updateProfileMutation.isPending}>
+							{updateProfileMutation.isPending
+								? "Updating..."
+								: t("features.level1.updateProfile")}
 						</Button>
 					</Col>
 					<Col>

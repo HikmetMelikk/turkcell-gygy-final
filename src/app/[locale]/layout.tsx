@@ -1,5 +1,6 @@
 import ThemeApplier from "@/components/ThemeApplier";
 import { routing } from "@/i18n/routing";
+import TanstackProvider from "@/lib/providers/TanstackProvider";
 import type { Metadata } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { DM_Sans } from "next/font/google";
@@ -44,9 +45,11 @@ export default async function RootLayout({
 					crossOrigin="anonymous"
 				/>
 			</head>
-			<body className={dmSans.className} >
-				<ThemeApplier/>
-				<NextIntlClientProvider>{children}</NextIntlClientProvider>
+			<body className={dmSans.className}>
+				<ThemeApplier />
+				<TanstackProvider>
+					<NextIntlClientProvider>{children}</NextIntlClientProvider>
+				</TanstackProvider>
 				<script
 					src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
 					integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
