@@ -13,9 +13,9 @@
 	margin-bottom: 0.5rem;
 	background: linear-gradient(
 		90deg,
-		rgba(var(--bs-secondary-rgb), 0.1) 25%,
-		rgba(var(--bs-secondary-rgb), 0.2) 37%,
-		rgba(var(--bs-secondary-rgb), 0.1) 63%
+		rgba(119, 126, 144, 0.1) 25%,
+		rgba(119, 126, 144, 0.2) 37%,
+		rgba(119, 126, 144, 0.1) 63%
 	);
 	background-size: 200% 100%;
 	animation: shimmer 1.5s infinite linear;
@@ -26,13 +26,13 @@
 	}
 }
 
-:global(.dark-theme) {
+:global([data-bs-theme="dark"]) {
 	.skeleton {
 		background: linear-gradient(
 			90deg,
-			rgba(255, 255, 255, 0.05) 25%,
-			rgba(255, 255, 255, 0.15) 37%,
-			rgba(255, 255, 255, 0.05) 63%
+			rgba(177, 181, 195, 0.1) 25%,
+			rgba(177, 181, 195, 0.2) 37%,
+			rgba(177, 181, 195, 0.1) 63%
 		);
 		background-size: 200% 100%;
 		opacity: 0.8;
@@ -43,10 +43,10 @@
 	.skeleton {
 		animation: none;
 		background-position: 0 0;
-		background: rgba(var(--bs-secondary-rgb), 0.15);
+		background: rgba(119, 126, 144, 0.15); /* --theme-secondary */
 	}
 
-	:global(.dark-theme) .skeleton {
-		background: rgba(255, 255, 255, 0.1);
+	:global([data-bs-theme="dark"]) .skeleton {
+		background: rgba(177, 181, 195, 0.15); /* --theme-secondary değeri */
 	}
 }

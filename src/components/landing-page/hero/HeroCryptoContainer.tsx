@@ -40,7 +40,7 @@ export default function HeroCryptoContainer({
 							) : (
 								<a
 									href={`#${crypto.toLowerCase()}`}
-									className="text-dark text-decoration-none fw-medium">
+									className="text-body text-decoration-none fw-medium">
 									{crypto}
 								</a>
 							)}

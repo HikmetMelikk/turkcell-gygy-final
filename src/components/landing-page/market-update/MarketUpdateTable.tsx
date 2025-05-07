@@ -9,8 +9,7 @@ import { StarIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button, Table } from "react-bootstrap";
-import Toast from "react-bootstrap/Toast";
+import { Button, Spinner, Table, Toast } from "react-bootstrap";
 import styles from "./market.module.scss";
 import SkeletonLoader from "./SkeletonLoader";
 import TradingViewMiniChart from "./TradingViewMiniChart";
@@ -25,6 +24,7 @@ export default function MarketUpdateTable({
 	const [toastMessage, setToastMessage] = useState("");
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
+	const [loadingButton, setLoadingButton] = useState<string | null>(null);
 	const router = useRouter();
 
 	const isFavorite = useFavoriteStore((state) => state.isFavorite);
@@ -76,10 +76,10 @@ export default function MarketUpdateTable({
 	const getToastTheme = () => {
 		// Eğer giriş yapmadan favori ekleme uyarısı ise warning rengi
 		if (!isAuthenticated && toastMessage.includes("giriş yapınız")) {
-			return theme === "dark" ? "warning" : "warning";
+			return "warning";
 		}
 		// Başarılı favori ekleme/çıkarma işlemleri için success rengi
-		return theme === "dark" ? "success" : "success";
+		return "success";
 	};
 
 	// Skeleton loader
@@ -97,6 +97,14 @@ export default function MarketUpdateTable({
 					))}
 			</>
 		);
+	};
+
+	const handleTradeClick = (tvSymbol: string) => {
+		setLoadingButton(tvSymbol);
+		// Gerçek navigasyon öncesi küçük bir gecikme ekleyerek spinner'ın görünmesini sağla
+		setTimeout(() => {
+			router.push(`/dashboard?symbol=${encodeURIComponent(tvSymbol)}`);
+		}, 800); // 800ms gecikme - UX için yeterli bir süre
 	};
 
 	return (
@@ -131,12 +139,6 @@ export default function MarketUpdateTable({
 								const tvSymbol = `BINANCE:${coinInfo.symbol}USDT`;
 
 								const fav = isFavorite(coinId);
-
-								const handleTradeClick = () => {
-									router.push(
-										`/dashboard?symbol=${encodeURIComponent(tvSymbol)}`
-									);
-								};
 
 								return (
 									<tr key={coin.id} className={styles.tableRow}>
@@ -188,8 +190,22 @@ export default function MarketUpdateTable({
 										<td className="align-middle">
 											<Button
 												className="rounded-pill"
-												onClick={handleTradeClick}>
-												<small>{t("table.trade")}</small>
+												onClick={() => handleTradeClick(tvSymbol)}
+												disabled={loadingButton === tvSymbol}>
+												{loadingButton === tvSymbol ? (
+													<>
+														<Spinner
+															as="span"
+															animation="border"
+															size="sm"
+															role="status"
+															aria-hidden="true"
+															className="me-1"
+														/>
+													</>
+												) : (
+													<small>{t("table.trade")}</small>
+												)}
 											</Button>
 										</td>
 									</tr>
@@ -203,7 +219,7 @@ export default function MarketUpdateTable({
 				delay={2500}
 				autohide
 				bg={getToastTheme()}
-				className="bottom-0 position-fixed m-4 end-0">
+				className="bottom-0 z-3 position-fixed m-4 end-0">
 				<Toast.Header
 					closeButton={true}
 					className={theme === "dark" ? "bg-dark text-light" : ""}>

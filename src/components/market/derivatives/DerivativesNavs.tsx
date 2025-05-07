@@ -42,7 +42,7 @@ export default function DerivativesNavs({
 							className={`rounded-pill px-4 ${
 								activeBadge === item
 									? "text-primary text-white"
-									: "bg-white text-muted border-0"
+									: "bg-body text-body-secondary border-0"
 							}`}>
 							{item}
 						</Button>
