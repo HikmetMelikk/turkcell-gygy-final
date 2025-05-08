@@ -34,8 +34,11 @@ interface CoinInfoApiResponse {
 async function fetchMarketPageData(
 	limit: number = 4
 ): Promise<MarketCoinDisplay[]> {
-	const baseUrl =
-		process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+	// NODE_ENV'e göre API URL'ini ayarla
+	const isDevelopment = process.env.NODE_ENV === "development";
+	const baseUrl = isDevelopment
+		? "http://localhost:3000"
+		: process.env.NEXT_PUBLIC_API_BASE_URL;
 
 	try {
 		const marketResponse = await fetch(

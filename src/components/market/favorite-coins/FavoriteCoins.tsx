@@ -51,8 +51,12 @@ async function fetchFavoriteCoins(): Promise<FavoriteCoinsResponse> {
 	}
 
 	try {
-		const baseUrl =
-			process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+		// NODE_ENV'e göre API URL'ini ayarla
+		const isDevelopment = process.env.NODE_ENV === "development";
+		const baseUrl = isDevelopment
+			? "http://localhost:3000"
+			: process.env.NEXT_PUBLIC_API_BASE_URL;
+
 		const res = await fetch(`${baseUrl}/api/coin?id=${ids.join(",")}`, {
 			cache: "no-store",
 		});
